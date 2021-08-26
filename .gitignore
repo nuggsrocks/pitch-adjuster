@@ -1,0 +1,8 @@
+# build folder
+public/
+
+# dependencies
+node_modules/
+
+# intellij files
+.idea/
