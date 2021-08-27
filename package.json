@@ -1,5 +1,5 @@
 {
-  "name": "webpack-template",
+  "name": "pitch-adjuster",
   "version": "1.0.0",
   "description": "webpack frontend build template",
   "main": "src/js/index.js",
@@ -17,7 +17,6 @@
     "@babel/core": "^7.15.0",
     "@babel/preset-env": "^7.15.0",
     "babel-loader": "^8.2.2",
-    "core-js": "^3.16.0",
     "css-loader": "^6.2.0",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
