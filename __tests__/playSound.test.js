@@ -4,7 +4,10 @@ describe('playSound()', () => {
   it('should play given sound in given context', () => {
     const mockBufferSource = {
       connect: jest.fn(),
-      start: jest.fn()
+      start: jest.fn(),
+      playbackRate: {
+        value: 1
+      }
     }
 
     const mockAudioCtx = {
@@ -14,10 +17,13 @@ describe('playSound()', () => {
 
     const mockAudioBuffer = 'audio-buffer'
 
-    playSound(mockAudioCtx, mockAudioBuffer)
+    const mockPlaybackRate = 0.8
+
+    playSound(mockAudioCtx, mockAudioBuffer, mockPlaybackRate)
 
     expect(mockAudioCtx.createBufferSource).toHaveBeenCalled()
     expect(mockBufferSource.buffer).toEqual(mockAudioBuffer)
+    expect(mockBufferSource.playbackRate.value).toEqual(mockPlaybackRate)
     expect(mockBufferSource.connect).toHaveBeenCalledWith(mockAudioCtx.destination)
     expect(mockBufferSource.start).toHaveBeenCalled()
   })
