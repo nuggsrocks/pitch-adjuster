@@ -3,6 +3,7 @@ import 'regenerator-runtime/runtime'
 import { loadFile } from './loadFile'
 import { loadSound } from './loadSound'
 import { playSound } from './playSound'
+import { adjustPitch } from './adjustPitch'
 
 const fileInput = document.querySelector('#file-input')
 
@@ -32,10 +33,10 @@ const pitchInputNumber = document.querySelector('#pitch-input-number')
 
 pitchInputRange.oninput = (event) => {
   pitchInputNumber.value = event.target.value
-  playbackRate = Math.pow(2, event.target.value / 12)
+  playbackRate = adjustPitch(event.target.value)
 }
 
 pitchInputNumber.oninput = (event) => {
   pitchInputRange.value = event.target.value
-  playbackRate = Math.pow(2, event.target.value / 12)
+  playbackRate = adjustPitch(event.target.value)
 }
