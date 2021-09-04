@@ -1,28 +1,28 @@
-import '../scss/index.scss'
 import 'regenerator-runtime/runtime'
+
 import { loadFile } from './loadFile'
 import { loadSound } from './loadSound'
 import { playSound } from './playSound'
-import { adjustPitch } from './adjustPitch'
-
-const fileInput = document.querySelector('#file-input')
+import { cutGrains } from './cutGrains'
 
 const audioCtx = new AudioContext()
 
-let decodedSound
+const fileInput = document.querySelector('#file-input')
+
+let grains
 
 let playbackRate = 1
 
 const playButton = document.querySelector('#play-button')
 
-playButton.onclick = () => playSound(audioCtx, decodedSound, playbackRate)
+playButton.onclick = () => playSound(audioCtx, grains, playbackRate)
 
 fileInput.oninput = (event) => {
   const audioFile = event.target.files[0]
 
   loadFile(fetch, URL.createObjectURL(audioFile)).then(arrayBuffer => {
     loadSound(audioCtx, arrayBuffer).then(audioBuffer => {
-      decodedSound = audioBuffer
+      grains = cutGrains(audioCtx, audioBuffer)
       playButton.disabled = false
     })
   })
@@ -33,10 +33,10 @@ const pitchInputNumber = document.querySelector('#pitch-input-number')
 
 pitchInputRange.oninput = (event) => {
   pitchInputNumber.value = event.target.value
-  playbackRate = adjustPitch(event.target.value)
+  playbackRate = Math.pow(2, event.target.value / 12)
 }
 
 pitchInputNumber.oninput = (event) => {
   pitchInputRange.value = event.target.value
-  playbackRate = adjustPitch(event.target.value)
+  playbackRate = Math.pow(2, event.target.value / 12)
 }
