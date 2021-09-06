@@ -1,7 +1,7 @@
 import { cutGrains } from '../src/js/cutGrains'
 
 describe('cutGrains()', () => {
-  it('should adjust speed of given audio buffer', () => {
-    expect(cutGrains())
+  it('should make 512-bit grains from given buffer data', () => {
+
   })
 })

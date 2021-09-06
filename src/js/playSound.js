@@ -1,7 +1,5 @@
-export const playSound = async (audioCtx, grains) => {
-  let grainIndex = 0
-
-  while (grainIndex < grains.length) {
+export const playSound = (audioCtx, grains) => {
+  for (let grainIndex = 0; grainIndex < grains.length; grainIndex++) {
     const grain = grains[grainIndex]
 
     const bufferSource = audioCtx.createBufferSource()
@@ -10,8 +8,6 @@ export const playSound = async (audioCtx, grains) => {
 
     bufferSource.connect(audioCtx.destination)
 
-    bufferSource.start(grain.length * grainIndex)
-
-    grainIndex++
+    bufferSource.start(grain.length * grainIndex / audioCtx.sampleRate)
   }
 }

@@ -11,7 +11,7 @@ const fileInput = document.querySelector('#file-input')
 
 let grains
 
-let playbackRate = 1
+const playbackRate = 1.1
 
 const playButton = document.querySelector('#play-button')
 
@@ -26,17 +26,4 @@ fileInput.oninput = (event) => {
       playButton.disabled = false
     })
   })
-}
-
-const pitchInputRange = document.querySelector('#pitch-input-range')
-const pitchInputNumber = document.querySelector('#pitch-input-number')
-
-pitchInputRange.oninput = (event) => {
-  pitchInputNumber.value = event.target.value
-  playbackRate = Math.pow(2, event.target.value / 12)
-}
-
-pitchInputNumber.oninput = (event) => {
-  pitchInputRange.value = event.target.value
-  playbackRate = Math.pow(2, event.target.value / 12)
 }

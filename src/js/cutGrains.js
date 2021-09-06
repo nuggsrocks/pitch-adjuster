@@ -1,5 +1,4 @@
 export const cutGrains = (audioCtx, audioBuffer) => {
-
   const grainSize = 512
   const sampleRate = audioCtx.sampleRate
 
@@ -15,14 +14,10 @@ export const cutGrains = (audioCtx, audioBuffer) => {
     data[channel] = audioBuffer.getChannelData(channel)
   }
 
-  console.log(data)
-
   for (let grainIndex = 0; grainIndex < numOfGrains; grainIndex++) {
-
     const grainData = {}
 
     const buffer = audioCtx.createBuffer(numOfChannels, grainSize, sampleRate)
-
 
     for (let channel = 0; channel < numOfChannels; channel++) {
       grainData[channel] = data[channel].slice(grainSize * grainIndex, grainSize * (grainIndex + 1))

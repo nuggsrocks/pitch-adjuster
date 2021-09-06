@@ -1,30 +1,25 @@
 import { playSound } from '../src/js/playSound'
 
-describe('playSound()', () => {
-  it('should play given sound in given context', () => {
+describe('playSound(audioCtx, grains)', () => {
+  it('should play grains in order seamlessly', () => {
     const mockBufferSource = {
       connect: jest.fn(),
-      start: jest.fn(),
-      playbackRate: {
-        value: 1
-      }
+      start: jest.fn()
     }
 
     const mockAudioCtx = {
-      createBufferSource: jest.fn(() => mockBufferSource),
-      destination: 'destination'
+      createBufferSource: () => mockBufferSource,
+      sampleRate: 44100
     }
 
-    const mockAudioBuffer = 'audio-buffer'
+    const mockAudioBuffer = Array.from(new Array(512), () => 0)
 
-    const mockPlaybackRate = 0.8
+    const mockGrains = Array.from(new Array(10), () => mockAudioBuffer)
 
-    playSound(mockAudioCtx, mockAudioBuffer, mockPlaybackRate)
+    playSound(mockAudioCtx, mockGrains)
 
-    expect(mockAudioCtx.createBufferSource).toHaveBeenCalled()
-    expect(mockBufferSource.buffer).toEqual(mockAudioBuffer)
-    expect(mockBufferSource.playbackRate.value).toEqual(mockPlaybackRate)
-    expect(mockBufferSource.connect).toHaveBeenCalledWith(mockAudioCtx.destination)
-    expect(mockBufferSource.start).toHaveBeenCalled()
+    mockGrains.forEach((grain, index) => {
+      expect(mockBufferSource.start).toHaveBeenCalledWith(grain.length * index / mockAudioCtx.sampleRate)
+    })
   })
 })
