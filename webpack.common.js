@@ -3,7 +3,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
   entry: {
-    main: './src/js/index.js'
+    main: './src/js/index.js',
+    worker: './src/js/worker.js'
   },
   output: {
     path: path.join(__dirname, 'public'),
@@ -22,7 +23,7 @@ module.exports = {
       },
 
       {
-        test: /\.(jpe?g|png|svg|gif|wav|mp3|ico)/,
+        test: /\.(jpe?g|png|svg|gif|wav|mp3|mp4|m4a|ico)/,
         loader: 'file-loader'
       }
     ]
