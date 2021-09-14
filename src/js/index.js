@@ -1,99 +1,64 @@
 import 'regenerator-runtime/runtime'
 import soundUrl from '../../painkiller1.m4a'
-
-const worker = new Worker('worker.js')
-
-worker.postMessage('start')
-
-worker.onmessage = (event) => {
-  console.log(event.data)
-}
+import { processFile } from './processFile'
+import { getAudioData } from './getAudioData'
+import { sliceBuffer } from './sliceBuffer'
+import { makeBuffers } from './makeBuffers'
 
 const AudioContext = window.AudioContext || window.webkitAudioContext
 
 const audioCtx = new AudioContext()
 
-async function processFile (audioCtx, soundUrl) {
-  try {
-    const res = await fetch(soundUrl)
+const worker = new Worker('worker.js')
 
-    const arrayBuffer = await res.arrayBuffer()
+let startTime = null
 
-    return await audioCtx.decodeAudioData(arrayBuffer)
-  } catch (e) {
-    console.error(e)
-    return null
+let slices = null
+
+let playedIndex = 0
+
+const grainSize = 512
+
+const grainDuration = grainSize / audioCtx.sampleRate
+
+worker.onmessage = (event) => {
+  if (event.data === 'schedule') {
+    schedule()
   }
 }
 
-function getAudioData (buffer) {
-  const bufferData = []
-
-  for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
-    bufferData.push(buffer.getChannelData(channel))
-  }
-
-  return bufferData
-}
-
-async function sliceBuffer (bufferData) {
-  try {
-    const grainSize = 512
-    const grains = []
-
-    for (let index = 0; index < bufferData[0].length / grainSize; index++) {
-      grains.push([
-        bufferData[0].slice(index * grainSize, (index + 1) * grainSize),
-        bufferData[1].slice(index * grainSize, (index + 1) * grainSize),
-      ])
+function schedule () {
+  while (playedIndex * grainDuration < audioCtx.currentTime + 100) {
+    if (playedIndex >= slices.length) {
+      worker.postMessage('stop')
+      return
     }
 
-    return grains
-  } catch (e) {
-    console.error(e)
-  }
-}
+    const source = audioCtx.createBufferSource()
+    source.buffer = slices[playedIndex]
 
-async function makeBuffers (audioCtx, grains) {
-  try {
-    const buffers = []
+    source.connect(audioCtx.destination)
 
-    for (const grain of grains) {
-      const buffer = audioCtx.createBuffer(2, grain[0].length, audioCtx.sampleRate)
-
-      for (let channel = 0; channel < 2; channel++) {
-        const bufferData = buffer.getChannelData(channel)
-
-        for (let dataIndex = 0; dataIndex < bufferData.length; dataIndex++) {
-          bufferData[dataIndex] = grain[channel][dataIndex]
-        }
-      }
-
-      buffers.push(buffer)
-    }
-
-    return buffers
-  } catch (e) {
-    console.error(e)
+    source.start(startTime + playedIndex * grainDuration)
+    source.stop(startTime + (playedIndex + 1) * grainDuration)
+    playedIndex++
   }
 }
 
 const playButton = document.querySelector('#play-button')
 
-window.onload = () => {
-  playButton.disabled = false
+playButton.onclick = () => {
+  worker.postMessage('start')
+  startTime = audioCtx.currentTime
 }
 
-playButton.onclick = () => {
-  console.log('click')
-  const start = performance.now()
-  processFile(audioCtx, soundUrl).then(res => {
-    const audioData = getAudioData(res)
+processFile(audioCtx, soundUrl).then(res => {
+  const audioData = getAudioData(res)
 
-    sliceBuffer(audioData).then(grains => {
-      makeBuffers(audioCtx, grains).then(buffers => {
-        console.log(performance.now() - start)
-      })
+  sliceBuffer(audioData).then(grains => {
+    makeBuffers(audioCtx, grains).then(buffers => {
+      slices = buffers
+      playButton.disabled = false
     })
   })
-}
+})
