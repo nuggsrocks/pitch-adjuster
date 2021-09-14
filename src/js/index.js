@@ -11,6 +11,10 @@ const audioCtx = new AudioContext()
 
 const worker = new Worker('worker.js')
 
+const schedulingInterval = 25
+
+worker.postMessage({interval: schedulingInterval})
+
 let startTime = null
 
 let slices = null
@@ -28,7 +32,7 @@ worker.onmessage = (event) => {
 }
 
 function schedule () {
-  while (playedIndex * grainDuration < audioCtx.currentTime + 100) {
+  while (playedIndex * grainDuration < audioCtx.currentTime + schedulingInterval / 1000) {
     if (playedIndex >= slices.length) {
       worker.postMessage('stop')
       return
