@@ -4,10 +4,9 @@
   "description": "webpack frontend build template",
   "main": "src/js/index.js",
   "scripts": {
-    "build:dev": "rm -rf public;webpack serve --config webpack.dev.js",
+    "webpack-dev-server": "rm -rf public;webpack serve --config webpack.dev.js",
     "build:prod": "rm -rf public;webpack --config webpack.prod.js",
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix .",
+    "lint": "eslint . --fix",
     "test": "jest",
     "test:watch": "jest --watch"
   },
